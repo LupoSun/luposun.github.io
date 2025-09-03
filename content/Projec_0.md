@@ -30,15 +30,31 @@ draft: false
   </div>
 
 </div>
+
 ---
 
 ## Part 2 — Architectural Perspective Compression
 
-- **Zoomed-in, farther viewpoint:**  
-![[P2.1.jpg]]
+<div style="display: flex; gap: 1rem;">
 
-- **Closer, no-zoom viewpoint (similar scale):**  
-![[P2.2.jpg]]
+  <div style="flex: 1; text-align: center;">
+
+    <p><strong>Zoomed-in, farther viewpoint</strong></p>
+
+    ![[P2.1.jpg]]
+
+  </div>
+
+  <div style="flex: 1; text-align: center;">
+
+    <p><strong>Closer, no-zoom viewpoint (similar scale)</strong></p>
+
+    ![[P2.2.jpg]]
+
+  </div>
+
+</div>
+
 ---
 
 ## Part 3 — Dolly Zoom

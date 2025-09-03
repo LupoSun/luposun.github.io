@@ -11,12 +11,25 @@ draft: false
 ---
 ## Part 1 — Selfie Comparison
 
-- **Close-up portrait:**  
-  ![[P1.1.jpg]]![]()
+<div style="display: flex; gap: 1rem;">
 
-- **Stepped-back, zoomed portrait:**  
-  ![[P1.2.jpg]]
+  <div style="flex: 1; text-align: center;">
 
+    <p><strong>Close-up portrait</strong></p>
+
+    ![[P1.1.jpg]]
+
+  </div>
+
+  <div style="flex: 1; text-align: center;">
+
+    <p><strong>Stepped-back, zoomed portrait</strong></p>
+
+    ![[P1.2.jpg]]
+
+  </div>
+
+</div>
 ---
 
 ## Part 2 — Architectural Perspective Compression

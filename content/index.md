@@ -1,6 +1,5 @@
 ---
-title: Welcome to Quartz
+title: Welcome to my portfolio for COMPSCI 280A
 ---
 
-This is a blank Quartz installation.
-See the [documentation](https://quartz.jzhao.xyz) for how to get started.
+To access the tasks, select and click on the left.

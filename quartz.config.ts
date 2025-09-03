@@ -29,34 +29,26 @@ const config: QuartzConfig = {
       },
       colors: {
         lightMode: {
-          // neutrals (dark UI background)
-          light: "#111519",        // page background
-          lightgray: "#1a1f24",    // cards / subtle panels
-          gray: "#2a313a",         // borders / muted text
-          darkgray: "#c7ccd1",     // secondary text on dark bg
-          dark: "#ebebec",         // main text on dark bg
-
-          // brand accents
-          secondary: "#0624db",    // electric blue
-          tertiary:  "#3bcffe",    // bright cyan
-
-          // highlights
-          highlight:    "rgba(204, 255, 2, 0.12)", // soft neon-yellow wash
-          textHighlight:"#ccff0288",               // text selection / mark
+          light: "#161618",
+          lightgray: "#393639",
+          gray: "#646464",
+          darkgray: "#d4d4d4",
+          dark: "#ebebec",
+          secondary: "#7b97aa",
+          tertiary: "#84a59d",
+          highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#b3aa0288",
         },
         darkMode: {
-          // keep identical for both modes (requested)
-          light: "#111519",
-          lightgray: "#1a1f24",
-          gray: "#2a313a",
-          darkgray: "#c7ccd1",
+          light: "#161618",
+          lightgray: "#393639",
+          gray: "#646464",
+          darkgray: "#d4d4d4",
           dark: "#ebebec",
-
-          secondary: "#0624db",
-          tertiary:  "#3bcffe",
-
-          highlight:    "rgba(204, 255, 2, 0.12)",
-          textHighlight:"#ccff0288",
+          secondary: "#7b97aa",
+          tertiary: "#84a59d",
+          highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#b3aa0288",
         },
       },
     },

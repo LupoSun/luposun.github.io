@@ -1,5 +1,5 @@
 ---
-title: CS280A Project 0 — Becoming Friends with Your Camera
+title: Project 0 — Becoming Friends with Your Camera
 tags:
   - CS280A
   - Proj0

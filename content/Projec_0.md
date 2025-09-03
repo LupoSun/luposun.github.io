@@ -6,12 +6,9 @@ tags:
   - Computer Vision
   - Photography
 date: 2025-09-02
-permalink: /cs180/proj0/
+permalink: /cs280A/proj0/
+draft: false
 ---
-# CS280A Project 0 — Becoming Friends with Your Camera
-
----
-
 ## Part 1 — Selfie Comparison
 
 - **Close-up portrait:**  

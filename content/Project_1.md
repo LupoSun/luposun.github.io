@@ -9,162 +9,212 @@ date: 2025-09-10
 permalink: /cs280A/proj1/
 draft: false
 ---
-## Part 1 — Selfie Comparison
+## Part 1 — Overview
 
-## Part 2 — Architectural Perspective Compression
+This project reconstructs color photographs from Prokudin-Gorskii glass plate scans by aligning three monochrome channels (B, G, R).  
+I started with a simple brute-force search, quickly ran into speed and accuracy walls, then built a coarse-to-fine image pyramid that made alignment fast and reliable.  
+Finally, I layered on a few automatic enhancements (“bells & whistles”) to trim borders, clean up tonal range, neutralize color casts, and nudge the colors closer to what we expect today.
+
+**tl;dr**: Pyramid alignment wins. Post-processing makes the results pop.
+
+---
+
+## Part 2 — Implementation
+
+### 1. Basic Brute Force Alignment
+
+**What I tried:**  
+For each moving channel (G and R), I searched integer shifts in a fixed window around the fixed channel (B), scoring each candidate with SSD / ZNCC on an inner crop to avoid border artifacts.
+
+**What happened:**  
+- It works on small images… until it doesn’t.  
+- The search space grows quadratically with the shift range; it gets slow fast.  
+- Borders and exposure differences can confuse raw-pixel SSD.
+
+**A memorable failure:**  
+![[emir_r59,42_g48,24_27m24s.jpg]]
+This implementation worked with the small cathedral image, but the mighty Emir took **27m24s** (yes, really) and still wasn’t well aligned. That pushed me to build the pyramid.
+
+---
+
+### 2. Image Pyramid Alignment
+
+**Idea in a sentence:**  
+Coarsest level: do a big search cheaply. Then, as it es to finer levels, **guess** the shift (×2 from the coarser level) and only **refine** in a small local window. Same metric (ZNCC/SSD), way less work.
+
+**Practical choices:**  
+- **Metric:** ZNCC (more robust to exposure/contrast differences).  
+- **Guard cropping:** remove estimated border + small guard to avoid `np.roll` wrap-around.  
+- **Parameters:** `max_shift` (coarse), `refine_window` (fine), and a variance-based border estimate.
+
+---
+
+### 3. Bells & Whistles
+
+#### 1. Automatic cropping
+**Goal:** My implementation of automatic cropping is actually a detecting function that does not actually crop the image but serve as a pre-processing step to dynamically inform the alignment algorithm. 
+**How:**  
+- For each channel, I compute the **variance of pixel intensities** across rows and columns.  
+- Rows or columns with variance below a small threshold are considered “flat” (likely border).  
+- The first and last rows/columns that cross the threshold mark the estimated content bounds. 
+- I expand slightly with a margin to avoid cutting into the image.  
+
+#### 2. Automatic contrasting
+**Goal:** expand tonal range so images don’t look flat.  
+**How:** percentile stretch per channel (e.g., 1%–99%); clip and rescale to '[0,1]'.  
+**Net effect:** crisper midtones, better separation in shadows/highlights.
+
+#### 3. Automatic white balance
+**Goal:** neutral gray overall.  
+**How:** gray-world assumption — scale each channel so its mean matches the global mean.  
+
+#### 4. Better color mapping
+**Goal:** P-G spectral bands ≠ modern sRGB.  
+**How:** apply a small 3×3 linear color matrix (close to identity) to reduce cross-channel tints and nudge hues toward natural.  
+[[ 1.15, -0.05, -0.10],
+ [-0.05,  1.10, -0.05],
+ [-0.10, -0.05,  1.15]]
+
+#### 5. Edge based alignment
+**Goal:** make alignment more robust when intensities differ across channels.  
+**How:** compute Sobel magnitude per channel and run pyramid alignment **on edges**; then apply the found shifts to the original images.  
+**Result:** The most accurate alignment in this homework yet
+
+---
 
 ## Part 3 — Gallery
 
-### First Go
+Each example shows:
+
+- **Before alignment** — naive stack (R,G,B) → heavy fringing and mis-registration.  
+- **After** — pyramid alignment (automatic cropping used as pre-processing).  
+- **Bells & whistles** — the post-processing trio (white balance → contrast → optional color matrix), using edge-based alignment.
+
+The images that are beaming neon green lights are the additional images of my choice from the Prokudin-Gorskii collection.
+
+
 <div style="display: flex; flex-direction: column; gap: 2rem;">
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>cathedral_result</strong></p>
-      <img src="cathedral_result.jpg" alt="cathedral_result" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>church_result</strong></p>
-      <img src="church_result.jpg" alt="church_result" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>Emir</strong></p>
+    <img src="emir_result.jpg" alt="Emir" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>EXTRA_master-pnp-prok-00100-00110u_result</strong></p>
-      <img src="EXTRA_master-pnp-prok-00100-00110u_result.jpg" alt="EXTRA"
-           style="border: 4px solid #39FF14;
-                  box-shadow: 0 0 10px #39FF14,
-                              0 0 20px #39FF14,
-                              0 0 40px #39FF14;" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>EXTRA_master-pnp-prok-00100-00176u_result</strong></p>
-      <img src="EXTRA_master-pnp-prok-00100-00176u_result.jpg" alt="EXTRA"
-           style="border: 4px solid #39FF14;
-                  box-shadow: 0 0 10px #39FF14,
-                              0 0 20px #39FF14,
-                              0 0 40px #39FF14;" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>Cathedral</strong></p>
+    <img src="cathedral_result.jpg" alt="cathedral_result" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>EXTRA_master-pnp-prok-00100-00189u_result</strong></p>
-      <img src="EXTRA_master-pnp-prok-00100-00189u_result.jpg" alt="EXTRA"
-           style="border: 4px solid #39FF14;
-                  box-shadow: 0 0 10px #39FF14,
-                              0 0 20px #39FF14,
-                              0 0 40px #39FF14;" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>EXTRA_master-pnp-prok-00200-00212u_result</strong></p>
-      <img src="EXTRA_master-pnp-prok-00200-00212u_result.jpg" alt="EXTRA"
-           style="border: 4px solid #39FF14;
-                  box-shadow: 0 0 10px #39FF14,
-                              0 0 20px #39FF14,
-                              0 0 40px #39FF14;" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>Church</strong></p>
+    <img src="church_result.jpg" alt="church_result" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>EXTRA_master-pnp-prok-00200-00227u_result</strong></p>
-      <img src="EXTRA_master-pnp-prok-00200-00227u_result.jpg" alt="EXTRA"
-           style="border: 4px solid #39FF14;
-                  box-shadow: 0 0 10px #39FF14,
-                              0 0 20px #39FF14,
-                              0 0 40px #39FF14;" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>harvesters_result</strong></p>
-      <img src="harvesters_result.jpg" alt="harvesters_result" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>master-pnp-prok-00100-00110u</strong></p>
+    <img src="EXTRA_master-pnp-prok-00100-00110u_result.jpg" alt="00110u"
+         style="border: 4px solid #39FF14;
+                box-shadow: 0 0 10px #39FF14,
+                            0 0 20px #39FF14,
+                            0 0 40px #39FF14;" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>icon_result</strong></p>
-      <img src="icon_result.jpg" alt="icon_result" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>italil_result</strong></p>
-      <img src="italil_result.jpg" alt="italil_result" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>master-pnp-prok-00100-00176u</strong></p>
+    <img src="EXTRA_master-pnp-prok-00100-00176u_result.jpg" alt="00176u"
+         style="border: 4px solid #39FF14;
+                box-shadow: 0 0 10px #39FF14,
+                            0 0 20px #39FF14,
+                            0 0 40px #39FF14;" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>lastochikino_result</strong></p>
-      <img src="lastochikino_result.jpg" alt="lastochikino_result" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>lugano_result</strong></p>
-      <img src="lugano_result.jpg" alt="lugano_result" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>master-pnp-prok-00100-00189u</strong></p>
+    <img src="EXTRA_master-pnp-prok-00100-00189u_result.jpg" alt="00189u"
+         style="border: 4px solid #39FF14;
+                box-shadow: 0 0 10px #39FF14,
+                            0 0 20px #39FF14,
+                            0 0 40px #39FF14;" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>melons_result</strong></p>
-      <img src="melons_result.jpg" alt="melons_result" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>monastery_result</strong></p>
-      <img src="monastery_result.jpg" alt="monastery_result" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>master-pnp-prok-00200-00212u</strong></p>
+    <img src="EXTRA_master-pnp-prok-00200-00212u_result.jpg" alt="00212u"
+         style="border: 4px solid #39FF14;
+                box-shadow: 0 0 10px #39FF14,
+                            0 0 20px #39FF14,
+                            0 0 40px #39FF14;" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>siren_result</strong></p>
-      <img src="siren_result.jpg" alt="siren_result" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong>three_generations_result</strong></p>
-      <img src="three_generations_result.jpg" alt="three_generations_result" />
-    </div>
+  <div style="text-align: center;">
+    <p><strong>master-pnp-prok-00200-00227u</strong></p>
+    <img src="EXTRA_master-pnp-prok-00200-00227u_result.jpg" alt="00227u"
+         style="border: 4px solid #39FF14;
+                box-shadow: 0 0 10px #39FF14,
+                            0 0 20px #39FF14,
+                            0 0 40px #39FF14;" />
   </div>
 
-  <div style="display: flex; gap: 1rem;">
-    <div style="flex: 1; text-align: center;">
-      <p><strong>tobolsk_result</strong></p>
-      <img src="tobolsk_result.jpg" alt="tobolsk_result" />
-    </div>
-    <div style="flex: 1; text-align: center;">
-      <p><strong></strong></p>
-    </div>
+  <div style="text-align: center;">
+    <p><strong>Harvesters</strong></p>
+    <img src="harvesters_result.jpg" alt="harvesters_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Icon</strong></p>
+    <img src="icon_result.jpg" alt="icon_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Italil</strong></p>
+    <img src="italil_result.jpg" alt="italil_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Lastochikino</strong></p>
+    <img src="lastochikino_result.jpg" alt="lastochikino_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Lugano</strong></p>
+    <img src="lugano_result.jpg" alt="lugano_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Melons</strong></p>
+    <img src="melons_result.jpg" alt="melons_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Monastery</strong></p>
+    <img src="monastery_result.jpg" alt="monastery_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Siren</strong></p>
+    <img src="siren_result.jpg" alt="siren_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Three Generations</strong></p>
+    <img src="three_generations_result.jpg" alt="three_generations_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>Tobolsk</strong></p>
+    <img src="tobolsk_result.jpg" alt="tobolsk_result" />
+  </div>
+
+  <div style="text-align: center;">
+    <p><strong>master-pnp-prok-00200-00228u</strong></p>
+    <img src="EXTRA_master-pnp-prok-00200-00228u_result.jpg" alt="00228u"
+         style="border: 4px solid #39FF14;
+                box-shadow: 0 0 10px #39FF14,
+                            0 0 20px #39FF14,
+                            0 0 40px #39FF14;" />
   </div>
 
 </div>
 
-
-### Second Go
-<div style="display: flex; gap: 1rem;">
-  <div style="flex: 1; text-align: center;">
-    <p><strong>Emir</strong></p>
-    <img src="emir_result.jpg", alt="Emir" />
-  </div>
-
-  <div style="flex: 1; text-align: center;">
-    <p><strong>00228u</strong></p>
-    <img src="EXTRA_master-pnp-prok-00200-00228u_result.jpg" alt="P1.2"
-    style="border: 4px solid #39FF14;
-                box-shadow: 0 0 10px #39FF14,
-                            0 0 20px #39FF14,
-                            0 0 40px #39FF14;" />
-  </div>
-</div>
-
-<div style="display: flex; gap: 1rem;">
-  <div style="flex: 1; text-align: center;">
-    <p><strong>Self Portrait</strong></p>
-    <img src="self_portrait_result.jpg", alt="Self Portrait" />
-  </div>
-   <div style="flex: 1; text-align: center;">
-    <p><strong> </strong></p>
-    
-  </div>
-</div>
 
   

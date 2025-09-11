@@ -13,9 +13,9 @@ draft: false
 
 This project reconstructs color photographs from Prokudin-Gorskii glass plate scans by aligning three monochrome channels (B, G, R).  
 I started with a simple brute-force search, quickly ran into speed and accuracy walls, then built a coarse-to-fine image pyramid that made alignment fast and reliable.  
-Finally, I layered on a few automatic enhancements (“bells & whistles”) to trim borders, clean up tonal range, neutralize color casts, and nudge the colors closer to what we expect today.
+Finally, I layered on a few automatic enhancements (“bells & whistles”) to automatically detect borders, clean up tonal range, neutralize color casts, and nudge the colors closer to what we expect today.
 
-**tl;dr**: Pyramid alignment wins. Post-processing makes the results pop.
+**tl;dr**: Pyramid alignment is much faster. Post-processing makes the results pop. Edge-based alignment for the win.
 
 ---
 
@@ -53,6 +53,7 @@ Coarsest level: do a big search cheaply. Then, as it es to finer levels, **guess
 
 #### 1. Automatic cropping
 **Goal:** My implementation of automatic cropping is actually a detecting function that does not actually crop the image but serve as a pre-processing step to dynamically inform the alignment algorithm. 
+
 **How:**  
 - For each channel, I compute the **variance of pixel intensities** across rows and columns.  
 - Rows or columns with variance below a small threshold are considered “flat” (likely border).  
@@ -90,7 +91,7 @@ Each example shows:
 - **After** — pyramid alignment (automatic cropping used as pre-processing).  
 - **Bells & whistles** — the post-processing trio (white balance → contrast → optional color matrix), using edge-based alignment.
 
-The images that are beaming neon green lights are the additional images of my choice from the Prokudin-Gorskii collection.
+The images that are beaming neon green light are the additional images of my choice from the Prokudin-Gorskii collection.
 
 
 <div style="display: flex; flex-direction: column; gap: 2rem;">

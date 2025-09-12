@@ -28,13 +28,13 @@ Finally, I layered on a few automatic enhancements (“bells & whistles”) to a
 For each moving channel (G and R), I searched integer shifts in a fixed window around the fixed channel (B), scoring each candidate with SSD / ZNCC on an inner crop to avoid border artifacts.
 
 The **Sum of Squared Differences (SSD)** score is:
-\\[
+$$
 \text{SSD}(A,B) = \sum_{x,y} \left(A(x,y) - B(x,y)\right)^2
-\\]
+$$
 The **Zero-mean Normalized Cross-Correlation (ZNCC)** score is:
-\[
+$$
 \text{ZNCC}(A,B) = \frac{\langle A - \bar{A},\; B - \bar{B} \rangle}{\|A - \bar{A}\|\;\|B - \bar{B}\|}
-\]
+$$
 ![[SS_Cathedral.jpg]]
 
 ![[SS_Moastery.jpg]]
@@ -59,6 +59,9 @@ This implementation worked with the small cathedral image, but the mighty Emir t
 
 **Idea in a sentence:**  
 Coarsest level: do a big search cheaply. Then, as it es to finer levels, **guess** the shift (×2 from the coarser level) and only **refine** in a small local window. Same metric (ZNCC/SSD), way less work.
+$$
+(d_x^{(L-1)}, d_y^{(L-1)}) \approx 2 \cdot (d_x^{(L)}, d_y^{(L)})
+$$
 
 **Practical choices:**  
 - **Metric:** ZNCC (more robust to exposure/contrast differences).  
@@ -73,33 +76,81 @@ Coarsest level: do a big search cheaply. Then, as it es to finer levels, **guess
 **Goal:** My implementation of automatic cropping is actually a detecting function that does not actually crop the image but serve as a pre-processing step to dynamically inform the alignment algorithm. 
 
 **How:**  
-- For each channel, I compute the **variance of pixel intensities** across rows and columns.  
+- For each channel, I compute the **variance** of pixel intensities across rows and columns:
+$$
+
+\sigma^2_{\text{row}}(i) = \mathrm{Var}(I_{i,:}), \quad 
+
+\sigma^2_{\text{col}}(j) = \mathrm{Var}(I_{:,j})
+
+$$
 - Rows or columns with variance below a small threshold are considered “flat” (likely border).  
 - The first and last rows/columns that cross the threshold mark the estimated content bounds. 
 - I expand slightly with a margin to avoid cutting into the image.  
 
 #### 2. Automatic contrasting
 **Goal:** expand tonal range so images don’t look flat.  
-**How:** percentile stretch per channel (e.g., 1%–99%); clip and rescale to '[0,1]'.  
-**Net effect:** crisper midtones, better separation in shadows/highlights.
+**How:** For a channel $C$, with lower percentile $p_l$ and upper percentile $p_h$:
+$$
+C' = \frac{C - p_l}{p_h - p_l}
+$$
+We can seecrisper midtones, better separation in shadows/highlights on the right.
 ![[BnW_AutoContrast.jpg]]
 (left before; right after)
 #### 3. Automatic white balance
 **Goal:** neutral gray overall.  
-**How:** gray-world assumption — scale each channel so its mean matches the global mean.  
+**How:** If $\mu_r, \mu_g, \mu_b$ are channel means and $\mu = (\mu_r+\mu_g+\mu_b)/3$, then:
+$$
+
+R' = R \cdot \frac{\mu}{\mu_r}, \quad
+
+G' = G \cdot \frac{\mu}{\mu_g}, \quad
+
+B' = B \cdot \frac{\mu}{\mu_b}
+
+$$
+On the right the white balance has been adjusted to be not too warm.
 ![[BnW_AutoWhiteBalance.jpg]]
 (left before; right after)
 #### 4. Better color mapping
 **Goal:** P-G spectral bands ≠ modern sRGB.  
-**How:** apply a small 3×3 linear color matrix (close to identity) to reduce cross-channel tints and nudge hues toward natural.  
-[[ 1.15, -0.05, -0.10],
- [-0.05,  1.10, -0.05],
- [-0.10, -0.05,  1.15]]
+**How:** Adjust hues using a 3×3 linear color transform.
+$$
+
+\begin{bmatrix} R' \\ G' \\ B' \end{bmatrix}
+
+=
+
+\begin{bmatrix}
+
+1.15 & -0.05 & -0.10 \\
+
+-0.05 & 1.10 & -0.05 \\
+
+-0.10 & -0.05 & 1.15
+
+\end{bmatrix}
+
+\cdot
+
+\begin{bmatrix} R \\ G \\ B \end{bmatrix}
+
+$$
+ We can see a slightly more refined color visualization on the right.
  ![[BnW_AutoColorMapping.jpg]]
 (left before; right after)
 #### 5. Edge based alignment
 **Goal:** make alignment more robust when intensities differ across channels.  
-**How:** compute Sobel magnitude per channel and run pyramid alignment **on edges**; then apply the found shifts to the original images.  
+**How:** Use features less sensitive to intensity shifts.  
+The Sobel gradient magnitude is:
+$$
+
+M(x,y) = \sqrt{(I * S_x)^2 + (I * S_y)^2}
+
+$$
+where $S_x, S_y$ are the Sobel filters in horizontal and vertical directions.  
+The pyramid alignment is then performed on $M$ instead of raw pixels, and the found shifts are applied to the original images.
+In this implementation I didn't reinvent the wheel and `sobal` form `scipy.ndimage` instead.
 **Result:** The most accurate alignment in this homework yet
 
 ---
@@ -112,7 +163,7 @@ Each example shows:
 - **After** — pyramid alignment (automatic cropping used as pre-processing).  
 - **Bells & whistles** — the post-processing trio (white balance → contrast → optional color matrix), using edge-based alignment.
 
-The images that are beaming neon green light are the additional images of my choice from the Prokudin-Gorskii collection.
+The images that are beaming **neon green** light are the additional images of my choice from the Prokudin-Gorskii collection.
 
 
 <div style="display: flex; flex-direction: column; gap: 2rem;">

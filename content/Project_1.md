@@ -151,6 +151,7 @@ $$
 where $S_x, S_y$ are the Sobel filters in horizontal and vertical directions.  
 The pyramid alignment is then performed on $M$ instead of raw pixels, and the found shifts are applied to the original images.
 In this implementation I didn't reinvent the wheel and `sobal` form `scipy.ndimage` instead.
+
 **Result:** The most accurate alignment in this homework yet
 
 ---

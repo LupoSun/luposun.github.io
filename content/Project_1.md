@@ -94,7 +94,7 @@ $$
 $$
 C' = \frac{C - p_l}{p_h - p_l}
 $$
-We can seecrisper midtones, better separation in shadows/highlights on the right.
+We can see crisper midtones, better separation in shadows/highlights on the right.
 ![[BnW_AutoContrast.jpg]]
 (left before; right after)
 #### 3. Automatic white balance

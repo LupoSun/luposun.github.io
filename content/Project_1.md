@@ -23,8 +23,23 @@ Finally, I layered on a few automatic enhancements (“bells & whistles”) to a
 
 ### 1. Basic Brute Force Alignment
 
-**What I tried:**  
+**What I tried:**  
+
 For each moving channel (G and R), I searched integer shifts in a fixed window around the fixed channel (B), scoring each candidate with SSD / ZNCC on an inner crop to avoid border artifacts.
+
+The **Sum of Squared Differences (SSD)** score is:
+\\[
+\text{SSD}(A,B) = \sum_{x,y} \left(A(x,y) - B(x,y)\right)^2
+\\]
+The **Zero-mean Normalized Cross-Correlation (ZNCC)** score is:
+\[
+\text{ZNCC}(A,B) = \frac{\langle A - \bar{A},\; B - \bar{B} \rangle}{\|A - \bar{A}\|\;\|B - \bar{B}\|}
+\]
+![[SS_Cathedral.jpg]]
+
+![[SS_Moastery.jpg]]
+
+![[SS_Tobolsk.jpg]]
 ![[SS_Cathedral.jpg]]
 ![[SS_Moastery.jpg]]
 ![[SS_Tobolsk.jpg]]

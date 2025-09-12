@@ -25,6 +25,9 @@ Finally, I layered on a few automatic enhancements (“bells & whistles”) to a
 
 **What I tried:**  
 For each moving channel (G and R), I searched integer shifts in a fixed window around the fixed channel (B), scoring each candidate with SSD / ZNCC on an inner crop to avoid border artifacts.
+![[SS_Cathedral.jpg]]
+![[SS_Moastery.jpg]]
+![[SS_Tobolsk.jpg]]
 
 **What happened:**  
 - It works on small images… until it doesn’t.  
@@ -64,17 +67,19 @@ Coarsest level: do a big search cheaply. Then, as it es to finer levels, **guess
 **Goal:** expand tonal range so images don’t look flat.  
 **How:** percentile stretch per channel (e.g., 1%–99%); clip and rescale to '[0,1]'.  
 **Net effect:** crisper midtones, better separation in shadows/highlights.
+![[BnW_AutoContrast.jpg]]
 
 #### 3. Automatic white balance
 **Goal:** neutral gray overall.  
 **How:** gray-world assumption — scale each channel so its mean matches the global mean.  
-
+![[BnW_AutoWhiteBalance.jpg]]
 #### 4. Better color mapping
 **Goal:** P-G spectral bands ≠ modern sRGB.  
 **How:** apply a small 3×3 linear color matrix (close to identity) to reduce cross-channel tints and nudge hues toward natural.  
 [[ 1.15, -0.05, -0.10],
  [-0.05,  1.10, -0.05],
  [-0.10, -0.05,  1.15]]
+ ![[BnW_AutoColorMapping.jpg]]
 
 #### 5. Edge based alignment
 **Goal:** make alignment more robust when intensities differ across channels.  

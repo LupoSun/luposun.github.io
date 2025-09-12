@@ -139,7 +139,7 @@ $$
  We can see a slightly more refined color visualization on the right.
  ![[BnW_AutoColorMapping.jpg]]
 (left before; right after)
-#### 5. Edge based alignment
+#### 5. Better Feature: Edge-based alignment
 **Goal:** make alignment more robust when intensities differ across channels.  
 **How:** Use features less sensitive to intensity shifts.  
 The Sobel gradient magnitude is:

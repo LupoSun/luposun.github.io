@@ -40,9 +40,6 @@ $$
 ![[SS_Moastery.jpg]]
 
 ![[SS_Tobolsk.jpg]]
-![[SS_Cathedral.jpg]]
-![[SS_Moastery.jpg]]
-![[SS_Tobolsk.jpg]]
 
 **What happened:**  
 - It works on small images… until it doesn’t.  

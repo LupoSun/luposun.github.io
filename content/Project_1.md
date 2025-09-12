@@ -68,11 +68,12 @@ Coarsest level: do a big search cheaply. Then, as it es to finer levels, **guess
 **How:** percentile stretch per channel (e.g., 1%–99%); clip and rescale to '[0,1]'.  
 **Net effect:** crisper midtones, better separation in shadows/highlights.
 ![[BnW_AutoContrast.jpg]]
-
+(left before; right after)
 #### 3. Automatic white balance
 **Goal:** neutral gray overall.  
 **How:** gray-world assumption — scale each channel so its mean matches the global mean.  
 ![[BnW_AutoWhiteBalance.jpg]]
+(left before; right after)
 #### 4. Better color mapping
 **Goal:** P-G spectral bands ≠ modern sRGB.  
 **How:** apply a small 3×3 linear color matrix (close to identity) to reduce cross-channel tints and nudge hues toward natural.  
@@ -80,7 +81,7 @@ Coarsest level: do a big search cheaply. Then, as it es to finer levels, **guess
  [-0.05,  1.10, -0.05],
  [-0.10, -0.05,  1.15]]
  ![[BnW_AutoColorMapping.jpg]]
-
+(left before; right after)
 #### 5. Edge based alignment
 **Goal:** make alignment more robust when intensities differ across channels.  
 **How:** compute Sobel magnitude per channel and run pyramid alignment **on edges**; then apply the found shifts to the original images.  

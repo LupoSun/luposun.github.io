@@ -24,7 +24,7 @@ const config: QuartzConfig = {
       cdnCaching: true,
       typography: {
         header: "Press Start 2P",
-        body: "Pixelify Sans",
+        body: "Roboto",
         code: "IBM Plex Mono",
       },
       colors: {

@@ -63,17 +63,20 @@ The result? Looks like the photo was struck by lightning — only the outlines r
 
 ## 1.3 Derivative of Gaussian (DoG)
 
+![[1.3_comparison.png]]
+![[1.3.2_comparison.png]]
+As a result the DoG filter does pick up less noise and return more defined edges.
+
 Two options:
 - Blur then differentiate, or  
 - Differentiate the Gaussian itself and convolve once.  
-
 Both give nearly identical results:  
 
 $$
 I * (D_x * G) \;\;\approx\;\; (I * G) * D_x
 $$
 
-![[1.3_comparison.png]]  
+![[1.3.3_DoG_vs_two_pass.png]]
 
 ---
 
@@ -128,7 +131,9 @@ Hybrid images are visual illusions:  
 - From medium distance, your brain glitches.
 Up close you see one face, far away you see another.  
 
-![[2.2_hybrid_image_JLo_Mariah.png]]  
+![[2.2_hybrid_image_JLo_Mariah.png]]
+- **Row 2:** The Fourier transforms show us the frequency content. You can see that Mariah’s image has strong low-frequency energy concentrated tightly in the center (smooth shading, broad features), while JLo’s has more spread-out energy toward the edges, indicating richer high-frequency details (wrinkles, edges, fine textures). The hybrid’s spectrum combines both patterns.
+- **Row 3:** This makes the decomposition crystal clear. On the left, JLo’s **high-pass image** isolates her sharp features—the crisp edges around the eyes, nose, and facial lines. In the middle, Mariah’s **low-pass image** keeps her soft skin tones and broader facial structure. On the right, adding them back together reconstructs the hybrid, where depending on your viewing distance, you either see Mariah’s smooth features or JLo’s sharp details pop out.
 ![[2.2_hybrid_image_Ye_Taylor.png]]
 
 I also checked the Fourier transforms — just to confirm this was math, not witchcraft.  

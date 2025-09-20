@@ -143,10 +143,10 @@ I also checked the Fourier transforms — just to confirm this was math, not wit
 ### Bells & Whistles for Hybrids
 
 I didn’t just stop at grayscale — I tried different **color strategies** for the high- and low-frequency bands:
-- **Gray + Gray (GG):** Both inputs converted to grayscale. Classic hybrid illusion, but no color cues.
-- **Low-pass Color + High-pass Gray (LG):** Mariah contributes the colorful smooth base, while JLo adds grayscale details. The hybrid feels tinted but still dominated by Mariah’s tones.
-- **High-pass Color + Low-pass Gray (HG):** JLo’s sharp details (in full color) layered onto a grayscale Mariah. The wrinkles and edges pop out more strongly, now with color.
-- **Color + Color (CC):** Both frequency bands keep their color. This creates the most vivid, but also the most chaotic, hybrid.
+- **Gray + Gray:** Both inputs converted to grayscale. Classic hybrid illusion, but no color cues.
+- **Low-pass Color + High-pass Gray:** Mariah contributes the colorful smooth base, while JLo adds grayscale details. The hybrid feels tinted but still dominated by Mariah’s tones.
+- **High-pass Color + Low-pass Gray:** JLo’s sharp details (in full color) layered onto a grayscale Mariah. The wrinkles and edges pop out more strongly, now with color.
+- **Color + Color:** Both frequency bands keep their color. This creates the most vivid, but also the most chaotic, hybrid.
 
 
 ![[2.2_hybrid_image_JLo_Mariah_BellsnWhistles.png]]
@@ -205,7 +205,6 @@ Using color in the low-pass image produced the most natural results, while color
 
 This project taught me:  
 - High frequencies = crispy details. Low frequencies = the big picture.  
-- Gaussian stacks = the secret sauce of seamless blending.  
 - Masks are powerful: soft ones hide your crimes, hard ones expose them.  
 - Alignment and color balance matter as much as math.  
 - And most importantly: hybrid images are a great way to gaslight your friends.  

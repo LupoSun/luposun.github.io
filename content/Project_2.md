@@ -91,6 +91,8 @@ Up close → one face. Step back → another. Brain.exe has stopped working.
 
 For my fav pair, I also plotted Fourier transforms, just to prove the math works and not witchcraft.  
 ![[2.2_hybrid_image_JLo_Mariah.png]]
+- The Fourier transforms show us the frequency content. You can see that Mariah’s image has strong low-frequency energy concentrated tightly in the center (smooth shading, broad features), while JLo’s has more spread-out energy toward the edges, indicating richer high-frequency details (wrinkles, edges, fine textures). The hybrid’s spectrum combines both patterns.
+- This makes the decomposition crystal clear. On the left, JLo’s **high-pass image** isolates her sharp features—the crisp edges around the eyes, nose, and facial lines. In the middle, Mariah’s **low-pass image** keeps her soft skin tones and broader facial structure. On the right, adding them back together reconstructs the hybrid, where depending on your viewing distance, you either see Mariah’s smooth features or JLo’s sharp details pop out.
 ![[2.2_hybrid_image_Ye_Taylor.png]]
 ### Bells & Whistles for Hybrid
 
@@ -113,7 +115,7 @@ Stacks ≠ pyramids.
 So you end up with 5 versions of the same apple and orange, like they’re getting progressively drunk.  
 Laplacians are just differences between Gaussians, a.k.a. “edges with attitude.”  
 
-![[oraple_stacks.png]]
+![[2.3.1_oraple.png]]
 
 ---
 
@@ -122,7 +124,7 @@ Laplacians are just differences between Gaussians, a.k.a. “edges with attitude
 Finally, the famous **Oraple**.  
 Take an apple, take an orange, build stacks, add a mask, pray.  
 Result: fruit that does not exist, but should.  
-![[2.3.1_oraple.png]]
+
 Masks matter:  
 - Hard mask = obvious seam.  
 - Soft mask + Gaussian stack = magic.  
